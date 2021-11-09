@@ -1,2 +1,0 @@
-C:\Users\evanr\source\repos\FindMySteamDLC\FindMySteamDLC\obj\Debug\netcoreapp3.1\Fakes\odw\o\netcoreapp3.1\f.csprojAssemblyReference.cache
-C:\Users\evanr\source\repos\FindMySteamDLC\FindMySteamDLC\obj\Debug\netcoreapp3.1\Fakes\odw\o\netcoreapp3.1\f.csproj.CoreCompileInputs.cache
