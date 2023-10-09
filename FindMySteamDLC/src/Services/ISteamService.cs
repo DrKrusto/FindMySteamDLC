@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FindMySteamDLC.src.Services
+namespace FindMySteamDLC.Services
 {
     public interface ISteamService
     {
         public IEnumerable<Game> GetGamesFromFiles(string pathToSteam);
-        public bool GetDlcsFromFiles(int AppID);
+        public IEnumerable<Dlc> GetDlcsFromFiles(int AppID);
         public string GetSteamRepository();
     }
 }

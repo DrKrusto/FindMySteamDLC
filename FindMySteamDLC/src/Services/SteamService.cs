@@ -1,40 +1,32 @@
-﻿using FindMySteamDLC.Models;
+﻿using FindMySteamDLC.Handlers;
+using FindMySteamDLC.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text.RegularExpressions;
 
-namespace FindMySteamDLC.src.Services
+namespace FindMySteamDLC.Services
 {
     public class SteamService : ISteamService
     {
-        public SteamService()
-        {
+        private readonly ILogger<SteamService> logger;
 
-        }
-
-        public bool GetDlcsFromFiles(int AppID)
+        private readonly List<string> SteamRegistryPaths = new()
         {
-            throw new NotImplementedException();
-        }
+            @"SOFTWARE\Valve\Steam",
+            @"SOFTWARE\Wow6432Node\Valve\Steam"
+        };
 
-        public IEnumerable<Game> GetGamesFromFiles(string pathToSteam)
+        public SteamService(ILogger<SteamService> logger)
         {
-            throw new NotImplementedException();
+            this.logger = logger;
         }
 
         public string GetSteamRepository()
         {
-            // TODO: not hardcode the paths
-            List<string> paths = new List<string>
-            {
-                @"SOFTWARE\Valve\Steam",
-                @"SOFTWARE\Wow6432Node\Valve\Steam"
-            };
-
-            foreach (string path in paths)
+            foreach (string path in SteamRegistryPaths)
             {
                 RegistryKey key = Registry.LocalMachine.OpenSubKey(path);
                 if (key != null)
@@ -42,6 +34,122 @@ namespace FindMySteamDLC.src.Services
             }
 
             return null;
+        }
+
+        public IEnumerable<Dlc> GetDlcsFromFiles(int AppID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Game> GetGamesFromFiles(string pathToSteam)
+        {
+            var games = new List<Game>();
+            var foundGames = new List<Game>();
+
+            foreach (string filePath in Directory.EnumerateFiles(Path.Combine(pathToSteam, "steamapps")))
+            {
+                if (!filePath.EndsWith(".acf"))
+                {
+                    continue;
+                }
+
+                Game game = ParseGameFromFile(filePath);
+
+                if (game != null)
+                {
+                    IEnumerable<Dlc> gamesDlcs = GetDlcsFromFiles(game.AppID);
+                    foundGames.Add(game);
+                }
+            }
+
+            SQLiteHandler.InsertGames(foundGames);
+            return foundGames;
+        }
+
+        private Game ParseGameFromFile(string filePath)
+        {
+            Game game = null;
+
+            try
+            {
+                using (var reader = new StreamReader(filePath))
+                {
+                    game = new Game { IsInstalled = true };
+
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        
+                        var regex = new Regex(@"(appid|name|dlcappid)");
+                        Match match = regex.Match(line);
+                        if (match.Success)
+                        {
+                            switch (match.Groups[0].Value)
+                            {
+                                case "appid":
+                                    game.AppID = ExtractAppID(line);
+                                    break;
+                                case "name":
+                                    game.Name = ExtractName(line);
+                                    break;
+                                case "dlcappid":
+                                    int dlcAppID = ExtractDlcAppID(line);
+                                    Dlc dlc = new Dlc(game) { AppID = dlcAppID, IsInstalled = true };
+                                    game.Dlcs.Add(dlcAppID, dlc);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while parsing a game file: {ex.Message}", filePath);
+            }
+
+            return game;
+        }
+
+        private int ExtractAppID(string line)
+        {
+            int appID = 0;
+            try
+            {
+                appID = Convert.ToInt32(line.Split('"')[3].Trim());
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while extracting a game AppID: {ex.Message}", line);
+            }
+            return appID;
+        }
+
+        private string ExtractName(string line)
+        {
+            string name = String.Empty;
+            try
+            {
+                name = line.Split('"')[3].Trim();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while extracting a game name: {ex.Message}", line);
+            }
+            return name;
+        }
+
+        private int ExtractDlcAppID(string line)
+        {
+            int appID = 0;
+            try
+            {
+                appID = Convert.ToInt32(line.Split('"')[3].Trim());
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while extracting a DLC AppID: {ex.Message}", line);
+            }
+            return appID;
         }
     }
 }
