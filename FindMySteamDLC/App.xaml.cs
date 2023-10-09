@@ -1,6 +1,7 @@
 ﻿using FindMySteamDLC.Services;
 using FindMySteamDLC.src.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -24,7 +25,9 @@ namespace FindMySteamDLC
             ServiceCollection services = new ServiceCollection();
 
             // Register services
-            //services.AddTransient<IWebClient, WebClientService>();
+            services.AddTransient<WebClient>();
+            services.AddTransient<ISteamService, SteamService>();
+            
 
             // Add the services to be injected into the classes
             //services.AddTransient<SteamGameInfo>();

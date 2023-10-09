@@ -104,7 +104,7 @@ namespace FindMySteamDLC.Services
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Error while parsing a game file: {ex.Message}", filePath);
+                this.logger.LogError($"Error while parsing a game file for the file \"{filePath}\"", ex.Message);
             }
 
             return game;
@@ -119,7 +119,7 @@ namespace FindMySteamDLC.Services
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Error while extracting a game AppID: {ex.Message}", line);
+                this.logger.LogError("Error while extracting a game AppID", ex.Message);
             }
             return appID;
         }
@@ -133,7 +133,7 @@ namespace FindMySteamDLC.Services
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Error while extracting a game name: {ex.Message}", line);
+                this.logger.LogError("Error while extracting a game name", ex.Message);
             }
             return name;
         }
@@ -147,7 +147,7 @@ namespace FindMySteamDLC.Services
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Error while extracting a DLC AppID: {ex.Message}", line);
+                this.logger.LogError("Error while extracting a DLC AppID", ex.Message);
             }
             return appID;
         }
