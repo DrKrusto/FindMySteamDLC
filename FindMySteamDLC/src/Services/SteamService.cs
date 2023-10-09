@@ -43,11 +43,9 @@ namespace FindMySteamDLC.Services
             return null;
         }
 
-        public IEnumerable<Game> GetGamesFromFiles(string pathToSteam)
+        public async Task<IEnumerable<Game>> GetGamesFromFiles(string pathToSteam)
         {
-            var games = new List<Game>();
             var foundGames = new List<Game>();
-
             foreach (string filePath in Directory.EnumerateFiles(Path.Combine(pathToSteam, "steamapps")))
             {
                 if (!filePath.EndsWith(".acf"))
@@ -55,20 +53,13 @@ namespace FindMySteamDLC.Services
                     continue;
                 }
 
-                Game game = ParseGameFromFile(filePath);
-
-                if (game != null)
-                {
-                    IEnumerable<Dlc> gamesDlcs = GetDlcsFromFiles(game.AppID);
-                    foundGames.Add(game);
-                }
+                Game game = await ParseGameFromFile(filePath);
+                foundGames.Add(game);
             }
-
-            SQLiteHandler.InsertGames(foundGames);
             return foundGames;
         }
 
-        private Game ParseGameFromFile(string filePath)
+        private async Task<Game> ParseGameFromFile(string filePath)
         {
             Game game = null;
 
@@ -80,7 +71,7 @@ namespace FindMySteamDLC.Services
 
                     while (!reader.EndOfStream)
                     {
-                        string line = reader.ReadLine();
+                        string line = await reader.ReadLineAsync();
                         
                         var regex = new Regex(@"(appid|name|dlcappid)");
                         Match match = regex.Match(line);
@@ -96,8 +87,8 @@ namespace FindMySteamDLC.Services
                                     break;
                                 case "dlcappid":
                                     int dlcAppID = ExtractDlcAppID(line);
-                                    Dlc dlc = new Dlc(game) { AppID = dlcAppID, IsInstalled = true };
-                                    game.Dlcs.Add(dlcAppID, dlc);
+                                    Dlc dlc = new() { AppID = dlcAppID, IsInstalled = true, Game = game };
+                                    game.Dlcs.Add(dlc);
                                     break;
                             }
                         }

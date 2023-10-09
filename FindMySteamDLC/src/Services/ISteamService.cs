@@ -9,7 +9,7 @@ namespace FindMySteamDLC.Services
 {
     public interface ISteamService
     {
-        public IEnumerable<Game> GetGamesFromFiles(string pathToSteam);
+        public Task<IEnumerable<Game>> GetGamesFromFiles(string pathToSteam);
         public string GetSteamRepository();
     }
 }
