@@ -2,6 +2,7 @@
 using FindMySteamDLC.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,11 +13,16 @@ namespace FindMySteamDLC.Services
     {
         private readonly SteamDbContext context;
         private readonly ISteamService steamService;
+        private readonly ISteamWebService steamWebService;
 
-        public SteamRepository(SteamDbContext context, ISteamService steamService)
+        public SteamRepository(
+            SteamDbContext context, 
+            ISteamService steamService, 
+            ISteamWebService steamWebService)
         {
             this.context = context;
             this.steamService = steamService;
+            this.steamWebService = steamWebService;
         }
 
         public async void AddAppsFromFiles(string pathToSteam)
@@ -25,6 +31,34 @@ namespace FindMySteamDLC.Services
             var dlcs = games.SelectMany(game => game.Dlcs);
 
             this.AddGames(games);
+            this.AddDlcs(dlcs);   
+        }
+
+        public async void UpdateAllDlcsMetadata()
+        {
+            var games = this.GetGames();
+            foreach (Game game in games)
+            {
+                var dlcsFromWeb = await steamWebService.GetDlcsFromSteamWeb(game.AppID, game);
+                await this.context.Dlcs.ForEachAsync(dlc => dlc = dlcsFromWeb.FirstOrDefault(d => d.AppID == dlc.AppID));
+                this.context.SaveChanges();
+            }
+        }
+
+        public async void AddDlcsFromSteamWeb()
+        {
+            var games = this.GetGames();
+            foreach (Game game in games)
+            {
+                var dlcs = await steamWebService.GetDlcsFromSteamWeb(game.AppID, game, game.Dlcs.Select(dlc => dlc.AppID).ToArray());
+                this.AddDlcs(dlcs);
+            }
+        }
+
+        public async void AddDlcsFromSteamWeb(int appID)
+        {
+            var game = this.GetGame(appID);
+            var dlcs = await steamWebService.GetDlcsFromSteamWeb(appID, game, game.Dlcs.Select(dlc => dlc.AppID).ToArray());
             this.AddDlcs(dlcs);
         }
 

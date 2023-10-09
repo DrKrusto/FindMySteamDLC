@@ -17,5 +17,9 @@ namespace FindMySteamDLC.Services
         public Dlc GetDlc(int appID);
         public IEnumerable<Game> GetGames();
         public IEnumerable<Dlc> GetDlcsForGame(int appID);
+        public void UpdateAllDlcsMetadata();
+        public void AddDlcsFromSteamWeb();
+        public void AddDlcsFromSteamWeb(int appID);
+        public void AddAppsFromFiles(string pathToSteam);
     }
 }
