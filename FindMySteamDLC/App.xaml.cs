@@ -1,15 +1,9 @@
-﻿using FindMySteamDLC.Services;
-using FindMySteamDLC.src.Services;
+﻿using FindMySteamDLC.Data;
+using FindMySteamDLC.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using System.Windows;
+using Application = System.Windows.Application;
 
 namespace FindMySteamDLC
 {
@@ -18,21 +12,34 @@ namespace FindMySteamDLC
     /// </summary>
     public partial class App : Application
     {
-        private ServiceProvider _serviceProvider;
+        private ServiceProvider serviceProvider;
 
         public App()
         {
+            #region Database
+            using (var context = new SteamDbContext())
+            {
+                context.Database.Migrate();
+            }
+            #endregion
+
+            #region Dependency Injection
             ServiceCollection services = new ServiceCollection();
 
             // Register services
             services.AddTransient<WebClient>();
             services.AddTransient<ISteamService, SteamService>();
+            services.AddDbContext<SteamDbContext>(options =>
+            {
+                options.UseSqlite("Data Source=GamesData.db");
+            }); 
             
 
             // Add the services to be injected into the classes
             //services.AddTransient<SteamGameInfo>();
 
-            _serviceProvider = services.BuildServiceProvider();
+            serviceProvider = services.BuildServiceProvider();
+            #endregion
         }
     }
 }
