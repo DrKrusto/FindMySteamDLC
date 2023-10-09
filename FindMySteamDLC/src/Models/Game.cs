@@ -7,7 +7,7 @@ using System.Text;
 
 namespace FindMySteamDLC.Models
 {
-    public class Game : Media
+    public class Game : App
     { 
         public List<Dlc> Dlcs { get; set; }
     }

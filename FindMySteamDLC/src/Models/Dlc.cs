@@ -5,10 +5,8 @@ using System.IO;
 
 namespace FindMySteamDLC.Models
 {
-    public class Dlc : Media
+    public class Dlc : App
     {
-        public Dlc(Game game) { this.Game = game; }
-
         public Game Game { get; set; }
     }
 }

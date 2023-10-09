@@ -9,7 +9,7 @@ using FindMySteamDLC.Handlers;
 
 namespace FindMySteamDLC.Models
 {
-    public abstract class Media
+    public abstract class App
     {
         public int AppID { get; set; }
         public string Name { get; set; } 
