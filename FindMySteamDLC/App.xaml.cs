@@ -26,17 +26,12 @@ namespace FindMySteamDLC
             #region Dependency Injection
             ServiceCollection services = new ServiceCollection();
 
-            // Register services
-            services.AddTransient<WebClient>();
             services.AddTransient<ISteamService, SteamService>();
+            services.AddTransient<ISteamWebService, SteamWebService>();
             services.AddDbContext<SteamDbContext>(options =>
             {
                 options.UseSqlite("Data Source=GamesData.db");
             }); 
-            
-
-            // Add the services to be injected into the classes
-            //services.AddTransient<SteamGameInfo>();
 
             serviceProvider = services.BuildServiceProvider();
             #endregion
