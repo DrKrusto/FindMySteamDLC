@@ -13,9 +13,13 @@
 
   <ItemGroup>
     <Compile Remove="FakesAssemblies\**" />
+    <Compile Remove="src\Handlers\**" />
     <EmbeddedResource Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="src\Handlers\**" />
     <None Remove="FakesAssemblies\**" />
+    <None Remove="src\Handlers\**" />
     <Page Remove="FakesAssemblies\**" />
+    <Page Remove="src\Handlers\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +64,16 @@
 
   <ItemGroup>
     <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="MainWindow.xaml.cs" />
+    <Compile Remove="SearchGamesWindow.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="MainWindow.xaml" />
+    <Page Remove="SearchGamesWindow.xaml" />
   </ItemGroup>
 
 </Project>
