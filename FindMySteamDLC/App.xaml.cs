@@ -16,24 +16,22 @@ namespace FindMySteamDLC
 
         public App()
         {
-            #region Database
-            using (var context = new SteamDbContext())
-            {
-                context.Database.Migrate();
-            }
-            #endregion
-
             #region Dependency Injection
             ServiceCollection services = new ServiceCollection();
 
             services.AddTransient<ISteamService, SteamService>();
             services.AddTransient<ISteamWebService, SteamWebService>();
-            services.AddDbContext<SteamDbContext>(options =>
-            {
-                options.UseSqlite("Data Source=GamesData.db");
-            }); 
+            services.AddTransient<ISteamRepository, SteamRepository>();
+            services.AddDbContext<SteamDbContext>(); 
 
             serviceProvider = services.BuildServiceProvider();
+            #endregion
+
+            #region Database
+            using (var context = new SteamDbContext())
+            {
+                context.Database.Migrate();
+            }
             #endregion
         }
     }

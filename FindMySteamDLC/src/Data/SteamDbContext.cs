@@ -7,5 +7,10 @@ namespace FindMySteamDLC.Data
     {
         public DbSet<Game> Games { get; set; }
         public DbSet<Dlc> Dlcs { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            options.UseSqlite("Data Source=GamesData.db");
+        }
     }
 }
