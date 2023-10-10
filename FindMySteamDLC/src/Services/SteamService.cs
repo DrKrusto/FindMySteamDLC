@@ -1,16 +1,9 @@
-﻿using FindMySteamDLC.Handlers;
-using FindMySteamDLC.Models;
-using HtmlAgilityPack;
+﻿using FindMySteamDLC.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Policy;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -39,7 +32,6 @@ namespace FindMySteamDLC.Services
                 if (key != null)
                     return key.GetValue("InstallPath").ToString();
             }
-
             return null;
         }
 

@@ -39,7 +39,7 @@ namespace FindMySteamDLC.Services
             var games = this.GetGames();
             foreach (Game game in games)
             {
-                var dlcsFromWeb = await steamWebService.GetDlcsFromSteamWeb(game.AppID, game);
+                var dlcsFromWeb = await steamWebService.GetDlcsFromSteamWeb(game);
                 await this.context.Dlcs.ForEachAsync(dlc => dlc = dlcsFromWeb.FirstOrDefault(d => d.AppID == dlc.AppID));
                 this.context.SaveChanges();
             }
@@ -50,7 +50,7 @@ namespace FindMySteamDLC.Services
             var games = this.GetGames();
             foreach (Game game in games)
             {
-                var dlcs = await steamWebService.GetDlcsFromSteamWeb(game.AppID, game, game.Dlcs.Select(dlc => dlc.AppID).ToArray());
+                var dlcs = await steamWebService.GetDlcsFromSteamWeb(game, game.Dlcs.Select(dlc => dlc.AppID).ToArray());
                 this.AddDlcs(dlcs);
             }
         }
@@ -58,7 +58,7 @@ namespace FindMySteamDLC.Services
         public async void AddDlcsFromSteamWeb(int appID)
         {
             var game = this.GetGame(appID);
-            var dlcs = await steamWebService.GetDlcsFromSteamWeb(appID, game, game.Dlcs.Select(dlc => dlc.AppID).ToArray());
+            var dlcs = await steamWebService.GetDlcsFromSteamWeb(game, game.Dlcs.Select(dlc => dlc.AppID).ToArray());
             this.AddDlcs(dlcs);
         }
 
