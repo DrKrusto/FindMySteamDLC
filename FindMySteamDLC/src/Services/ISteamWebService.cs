@@ -5,6 +5,6 @@ namespace FindMySteamDLC.Services
 {
     public interface ISteamWebService
     {
-        public Task<IEnumerable<Models.Dlc>> GetDlcsFromSteamWeb(int appID, Models.Game assignedTo = null, int[] appidToSkip = null);
+        public Task<IEnumerable<Models.Dlc>> GetDlcsFromSteamWeb(Models.Game assignedTo, int[] appidToSkip = null);
     }
 }

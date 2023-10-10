@@ -1,13 +1,10 @@
-﻿using FindMySteamDLC.Handlers;
-using FindMySteamDLC.Models;
-using FindMySteamDLC.src.Services;
+﻿using FindMySteamDLC.Models;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,18 +14,27 @@ namespace FindMySteamDLC.Services
     public class SteamWebService : ISteamWebService
     {
         private readonly ILogger<SteamWebService> logger;
-        private const string steamUrl = "https://store.steampowered.com/";
+        private readonly ISteamService steamService;
 
-        public async Task<IEnumerable<Dlc>> GetDlcsFromSteamWeb(int appID, Game assignedTo = null, int[] appidToSkip = null)
+        private const string steamUrl = "https://store.steampowered.com/";
+        private const string steamCdn  = "http://cdn.akamai.steamstatic.com/";
+
+        public SteamWebService(ILogger<SteamWebService> logger, ISteamService steamService)
+        {
+            this.logger = logger;
+            this.steamService = steamService;
+        } 
+
+        public async Task<IEnumerable<Dlc>> GetDlcsFromSteamWeb(Game assignedTo, int[] appidToSkip = null)
         {
             List<Dlc> dlcs = new();
-            HtmlDocument htmlDoc = await GetDlcsHtmlPage(appID);
+            HtmlDocument htmlDoc = await GetDlcsHtmlPage(assignedTo.AppID);
             HtmlNodeCollection dlcNodes = htmlDoc.DocumentNode
                 .SelectNodes("//div[contains(concat(' ', normalize-space(@class), ' '), ' recommendation ')]");
 
             if (dlcNodes == null)
             {
-                this.logger.LogInformation($"No DLCs found for the game with the AppID: {appID}");
+                this.logger.LogInformation($"No DLCs found for the game with the AppID: {assignedTo.AppID}");
                 return dlcs;
             }
 
@@ -47,39 +53,39 @@ namespace FindMySteamDLC.Services
                     .SelectSingleNode("a/div/div[1]/div/span[1]")
                     .InnerText;
 
-                Dlc dlc = null;
-                if (assignedTo != null)
+                Dlc dlc = assignedTo.Dlcs.FirstOrDefault(dlc => dlc.AppID == appid);
+                if (dlc != null)
                 {
-                    dlc = assignedTo.Dlcs.FirstOrDefault(dlc => dlc.AppID == appid);
-                    if (dlc != null)
-                    {
-                        dlc.Name = dlcName;
-                    }
+                    dlc.Name = dlcName;
                 }
                 else
                 {
-                    // TODO: Add the game to the database if it doesn't exist
-                    dlc = new Dlc(assignedTo)
+                    dlc = new Dlc
                     {
-                        Name = dlcName,
                         AppID = appid,
-                        IsInstalled = false
+                        Name = dlcName,
+                        Game = assignedTo
                     };
+                    dlcs.Add(dlc);
                 }
 
-                //game.Dlcs.Add(appid, dlc);
-
-                if (!File.Exists(String.Format(@"{0}\appcache\librarycache\{1}_header.jpg", SteamInfo.PathToSteam, appid)))
+                // TODO: Move this to a specific method to handle the image download
+                var steamPath = steamService.GetSteamRepository();
+                if (!File.Exists(String.Format(@"{0}\appcache\librarycache\{1}_header.jpg", steamPath, appid)))
                 {
-                    using (WebClient client = new WebClient())
+                    using (HttpClient client = new())
                     {
                         try
                         {
-                            client.DownloadFile(String.Format("http://cdn.akamai.steamstatic.com/steam/apps/{0}/header.jpg", appid), String.Format(@"{0}\appcache\librarycache\{1}_header.jpg", SteamInfo.PathToSteam, appid));
+                            var imageStream = await client.GetStreamAsync($"{steamCdn}steam/apps/{appid}/header.jpg");
+                            using (var fileStream = new FileStream(@$"{steamPath}\appcache\librarycache\{appid}_header.jpg", FileMode.Create, FileAccess.Write))
+                            {
+                                imageStream.CopyTo(fileStream);
+                            }   
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("Couldn't download the dlc image. Exception: " + e.Message);
+                            this.logger.LogError($"Error when getting the DLC image for the app \"{appid}\"", e);
                         }
                     }
 
