@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FindMySteamDLC.Properties {
+namespace SteamDataViewer.Properties {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace FindMySteamDLC.Properties {
     // à l'aide d'un outil, tel que ResGen ou Visual Studio.
     // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
     // avec l'option /str ou régénérez votre projet VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -39,7 +39,7 @@ namespace FindMySteamDLC.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FindMySteamDLC.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SteamDataViewer.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,31 +61,31 @@ namespace FindMySteamDLC.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
-        public static System.Drawing.Bitmap dlcnotdownloaded {
-            get {
-                object obj = ResourceManager.GetObject("dlcnotdownloaded", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap loading_buffering {
+        public static byte[] loading_buffering {
             get {
                 object obj = ResourceManager.GetObject("loading_buffering", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
-        public static byte[] unknownimg {
+        public static byte[] unknown_dlc {
             get {
-                object obj = ResourceManager.GetObject("unknownimg", resourceCulture);
+                object obj = ResourceManager.GetObject("unknown_dlc", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        public static byte[] unknown_game {
+            get {
+                object obj = ResourceManager.GetObject("unknown_game", resourceCulture);
                 return ((byte[])(obj));
             }
         }

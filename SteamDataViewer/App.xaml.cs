@@ -3,10 +3,9 @@ using FindMySteamDLC.Services;
 using FindMySteamDLC.View;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
-using Application = System.Windows.Application;
+using System.Windows;
 
-namespace FindMySteamDLC
+namespace SteamDataViewer
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -10,7 +10,7 @@ namespace FindMySteamDLC.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source=GamesData.db");
+            options.UseSqlite("Data Source=games_data.db");
         }
     }
 }
