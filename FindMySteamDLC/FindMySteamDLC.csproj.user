@@ -7,12 +7,18 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="src\View\Testing.xaml.cs">
+    <Compile Update="src\View\HomePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="src\View\Library.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="src\View\Testing.xaml">
+    <Page Update="src\View\HomePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="src\View\Library.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

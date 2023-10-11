@@ -1,5 +1,6 @@
 ﻿using FindMySteamDLC.Data;
 using FindMySteamDLC.Services;
+using FindMySteamDLC.View;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
@@ -19,10 +20,17 @@ namespace FindMySteamDLC
             #region Dependency Injection
             ServiceCollection services = new ServiceCollection();
 
+            // Services
             services.AddTransient<ISteamService, SteamService>();
             services.AddTransient<ISteamWebService, SteamWebService>();
             services.AddTransient<ISteamRepository, SteamRepository>();
-            services.AddDbContext<SteamDbContext>(); 
+
+            // Data & Logging
+            services.AddDbContext<SteamDbContext>();
+            services.AddLogging();
+
+            // Windows
+            services.AddSingleton<Library>();
 
             serviceProvider = services.BuildServiceProvider();
             #endregion
@@ -33,6 +41,14 @@ namespace FindMySteamDLC
                 context.Database.Migrate();
             }
             #endregion
+        }
+
+        protected override void OnStartup(System.Windows.StartupEventArgs e)
+        {
+            var testing = serviceProvider.GetRequiredService<Library>();
+            testing.Show();
+
+            base.OnStartup(e);
         }
     }
 }
