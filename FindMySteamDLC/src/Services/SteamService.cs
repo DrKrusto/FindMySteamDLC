@@ -59,7 +59,7 @@ namespace FindMySteamDLC.Services
             {
                 using (var reader = new StreamReader(filePath))
                 {
-                    game = new Game { IsInstalled = true };
+                    game = new Game { IsInstalled = true, Dlcs = new() };
 
                     while (!reader.EndOfStream)
                     {
